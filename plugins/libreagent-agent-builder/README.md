@@ -1,14 +1,14 @@
 # LibreAgent Agent Builder
 
-This portable Agent Plugin connects ChatGPT, Codex, Claude Code, and other MCP clients to the LibreAgent registry.
+This plugin connects Codex, and Claude Code through the repository's linked skills, to the LibreAgent registry.
 
-ChatGPT and other hosted clients use the server's OAuth 2.1 authorization-code flow with PKCE. Codex local can use the same OAuth flow or read a personal `mcp:access` token from `LIBREAGENT_API_TOKEN`, as declared by `.mcp.json`. Create that token from **Administration → Jetons API et MCP**; its plaintext value is shown once and must stay in the user's secret environment.
+Codex connects to the MCP server with the server's OAuth 2.1 authorization-code flow with PKCE.
 
-The portable `plugin.json` and `mcp.json` are the cross-client source. `.codex-plugin/plugin.json` and `.mcp.json` provide the Codex compatibility overlay. The plugin contains its skills; the repository's `.agents/skills` and `.claude/skills` paths point to those same files.
+`.codex-plugin/plugin.json` and `.mcp.json` are the plugin manifest. Do not add a root `plugin.json`: Codex 0.159 then uses the portable manifest and loads none of the plugin's hooks, whatever `extensions.com.openai.hooks` declares. The plugin contains its skills; the repository's `.agents/skills` and `.claude/skills` paths point to those same files.
 
-The MCP endpoint in `mcp.json` is the LibreAgent server binding shared by the organization. Organization-specific agent exports write their current `PUBLIC_API_URL` into that file and add a server hash to the plugin version. If an administrator moves the organization to another server, publish and distribute a newly generated plugin version; never rewrite an already distributed plugin archive.
+The MCP endpoint in `.mcp.json` is the LibreAgent server binding shared by the organization. If an administrator moves the organization to another server, publish and distribute a new plugin version; never rewrite an already distributed plugin archive.
 
-When Codex trusts this plugin's local `PostToolUse` hook via `/hooks`, a newly written `SKILL.md` prompts the agent to offer a private or organization import. Codex skips untrusted plugin hooks. The hook reads file paths and timestamps only. The `capture-created-skill` workflow also covers clients without local hooks. Import uses `skill_import_preview` and an explicitly confirmed `skill_import_apply`; additional skill files are rejected until LibreAgent can preserve them.
+When Codex trusts this plugin's local hooks via `/hooks`, a `UserPromptSubmit` hook recognizes a conversation that builds an agent, including indirect requests such as research "pour créer un agent" and later turns like "installe tout ça", and reminds the model to run `create-organization-agent` until the agent is created, shared, backed up and hosted as chosen. A `PostToolUse` hook notices newly written, copied or installed `SKILL.md`, `AGENTS.md` and `CLAUDE.md` files. Codex skips untrusted plugin hooks, so the skill descriptions carry the same detection on their own. The hooks read prompts, file paths and timestamps only and never upload anything. Import uses `skill_import_preview` and an explicitly confirmed `skill_import_apply` for standalone skills; skills with scripts, references or data stay in the agent's project directory, whose backup, shared snapshot and H24 transfer carry every file. Run `python3 -m unittest discover plugins/libreagent-agent-builder/tests` after changing the detection.
 
 For Codex OAuth, run `codex mcp login libreagent` and complete the LibreAgent sign-in. The server supports authorization code with PKCE and rotating refresh tokens. If Codex reports `authentication_required`, the plugin is installed but the current MCP connection is not signed in.
 

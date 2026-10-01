@@ -8,7 +8,7 @@
       "description": "Create private or organization agents with native H24 computer setup and durable backup status.",
       "name": "libreagent-agent-builder",
       "source": "./claude/libreagent-agent-builder",
-      "version": "0.2.4"
+      "version": "0.2.6+codex.20261001160000"
     }
   ]
 }

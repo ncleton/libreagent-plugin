@@ -1,8 +1,20 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${PLUGIN_ROOT}/hooks/agent_creation_prompt.py",
+            "timeout": 5,
+            "statusMessage": "Checking for agent creation"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
-        "matcher": "Bash|Edit|Write|apply_patch",
+        "matcher": "Bash|Edit|Write|MultiEdit|apply_patch",
         "hooks": [
           {
             "type": "command",

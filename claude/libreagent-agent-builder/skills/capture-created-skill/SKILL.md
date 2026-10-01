@@ -1,13 +1,17 @@
 ---
 name: capture-created-skill
-description: After creating or updating any local SKILL.md, including when a generic "crée un agent" request resulted in a local skill, offer to keep it local or import it into LibreAgent with private or organization visibility and an explicit default-install choice.
+description: After creating, installing, copying, renaming or adapting any local SKILL.md, including third-party skills installed for an agent and skills produced by a "crée un agent" request, offer to keep it local or import it into LibreAgent with private or organization visibility and an explicit default-install choice. When the skill serves an agent being built, hand over to create-organization-agent.
 ---
 
 # Capture a created skill
 
-Use this workflow immediately after an agent creates or updates a local skill, including when the user says “crée un skill pour refaire ça la prochaine fois.” Finish and validate the local skill first. Then offer the user two choices: keep it local, or import it into LibreAgent. Do not send the skill text or files to LibreAgent before the user chooses import. If they keep it local, leave its files untouched and stop this workflow.
+Use this workflow immediately after an agent creates or updates a local skill, including when the user says “crée un skill pour refaire ça la prochaine fois.” Installing, cloning, copying, renaming or editing a third-party skill counts as creating or updating it. Finish and validate the local skill first.
 
-For an import, inspect the entire local skill directory. Read the `SKILL.md` YAML frontmatter and body; list every file relative to the skill directory. LibreAgent currently preserves only a standalone `SKILL.md`. If scripts, references, assets, or other files exist, explain that import would lose them and keep the local skill until full-file import is supported. Never omit files from `sourceFiles` or delete resources to bypass this check.
+If the skill was written, installed or adapted for an agent that the conversation is building, follow `create-organization-agent` instead of stopping here: the skill belongs in that agent's project directory and LibreAgent registers the agent itself. Use the import steps below only for standalone skills the agent pins.
+
+Otherwise, offer the user two choices: keep it local, or import it into LibreAgent. Do not send the skill text or files to LibreAgent before the user chooses import. If they keep it local, leave its files untouched and stop this workflow.
+
+For an import, inspect the entire local skill directory. Read the `SKILL.md` YAML frontmatter and body; list every file relative to the skill directory. LibreAgent currently preserves only a standalone `SKILL.md` through skill import. If scripts, references, assets, or other files exist, never omit them from `sourceFiles` or delete them to bypass this check. Offer instead to make the skill part of a LibreAgent agent project with `create-organization-agent`: its project backup keeps every file, can be shared with colleagues and moves with the agent to an H24 computer.
 
 Ask the user which organization to use if more than one is available (`organizations_list`). Then determine:
 

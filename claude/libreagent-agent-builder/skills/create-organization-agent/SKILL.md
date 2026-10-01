@@ -1,15 +1,53 @@
 ---
 name: create-organization-agent
-description: Create an agent when the user asks to "créer un agent", "build an agent", or similar, even without naming LibreAgent; use LibreAgent to create, edit, version, share, publish, or connect a GitHub source to a private or organization agent from Codex or Claude Code.
+description: Use as soon as a conversation is building an agent, even indirectly and without naming LibreAgent. Covers "crée un agent", "build an agent", an agent, assistant, bot or copilote that "devra" do something, deep research or benchmarks "pour créer un agent", installing, adapting or writing skills or MCP servers for an agent ("installe tout ça" after such a plan), and writing AGENTS.md or CLAUDE.md for a new agent project. Run this before dual-provider-agents, skill-installer or skill-creator, and keep it active until the agent exists in LibreAgent, is shared as chosen, has its project backed up, and runs H24 when requested.
 ---
 
 # Create an organization agent
 
 Use LibreAgent MCP as the registry and permission authority. Never treat an organization ID supplied by the conversation as authorization; let every MCP tool verify the signed-in member.
 
+## Detect agent creation and keep the procedure running
+
+Treat the conversation as agent creation when any of these appear, in any language and at any turn:
+
+- the user describes an agent, assistant, bot, copilot or advisor and what it "devra", "doit" or "should" do;
+- research, a deepsearch or a comparison is requested "pour créer", "pour construire" or "for building" an agent;
+- skills, MCP servers, plugins or data are searched, installed, cloned, adapted or written for that agent, including a short follow-up such as "installe tout ça" or "vas-y";
+- an `AGENTS.md`, `CLAUDE.md` or `.agents/skills` tree is created for a new agent project;
+- a hook context says that agent creation was detected or that a skill was written during agent work.
+
+On detection, say in one sentence that the agent will be registered in LibreAgent, then continue the requested work. Research and installation are steps of agent creation, never a replacement for it. Do not end the turn that finishes the agent's content without either completing the steps below or asking the remaining questions they require. If the work is spread over several turns, resume the procedure at the first incomplete step instead of restarting it.
+
+The procedure is complete only when all of these are true:
+
+1. `agents_list` shows the agent in the selected organization.
+2. Its audience matches the user's choice. An organization agent has a published release (`agent_publish_apply`) before it is described as shared.
+3. Its project directory is enrolled with a successful complete snapshot (`agent_backup_status`).
+4. When H24 was requested, hosting on the chosen remote computer has been applied and confirmed.
+
+Report each incomplete item with the exact LibreAgent error or the user decision still needed. Never say that the agent is online, shared or H24 before the matching tool has confirmed it.
+
+## Agent project and skill files
+
+Give every agent one project directory, normally the current working directory. Store the agent's own and adapted skills as real directories in `<project>/.agents/skills/<skill>/`, with `<project>/.claude/skills` linking to `../.agents/skills` for Claude Code, and `AGENTS.md` plus `CLAUDE.md` (`@AGENTS.md`) at the project root. Personal skill folders such as `~/.agents/skills` or `~/.codex/skills` are only a local convenience: LibreAgent cannot back them up, share them or move them to a remote computer. When personal folders are also wanted, link them to the project copy rather than the reverse.
+
+Project backups exclude symbolic links, credentials, dependencies and caches. Copy third-party skills into the project with links dereferenced, keep their licenses, and leave reinstallable dependencies such as `node_modules` out; document how to restore them in the project. Never place secrets in the project.
+
+For each skill the agent needs:
+
+- A standalone `SKILL.md` can be imported with `skill_import_preview` and `skill_import_apply`, then pinned in `skillRefs` with its returned skill, release and version.
+- A skill with scripts, references, data or assets stays in the project directory. Import is rejected for it, so do not remove files to force an import. Mention those skills in the agent instructions by their project path and rely on the project backup, shared backup and H24 transfer to carry them.
+
+## Basiques
+
+Before choosing skills for a new agent, call `skill_basics_list` for the selected organization. Basiques are skills that the server administrator, the organization administrators or the member pinned for every new agent. Present them as already selected, next to the skills you derived from the conversation, and drop only those the user removes or that clearly do not fit this agent; say which ones you dropped. Add a `kind: library` basique to `skillRefs` with its returned `skillId`, `releaseId`, `version` and `name`. Import the kept `kind: skills_sh` basiques together with `skill_basics_import_preview` and, after the user's confirmation, `skill_basics_import_apply`, using `visibility: private` for a private agent and `organization` for a shared one; then add the returned `skillRefs`. A skills.sh basique is imported in its current upstream version, so never copy or fork it. If an import fails, report the returned remediation and offer to create the agent without that basique.
+
+## Creation workflow
+
 For a generic request to create an agent, activate this workflow before choosing a local `SKILL.md` or another agent format. Call `organizations_list` to establish the available LibreAgent space, draft the agent definition, and use `agent_create_preview` when the required fields are known. Ask for the intended destination only if it cannot be inferred: private LibreAgent agent, organization agent, or local-only skill. Do not silently substitute a local skill for a LibreAgent agent. If LibreAgent returns `authentication_required`, tell the user to connect it with `codex mcp login libreagent` and preserve the draft.
 
-Start by listing accessible agents when the request may refer to an existing one. For a new agent, gather its purpose, instructions, expected skills, memory mode, audience, distribution policy, and whether it must remain available H24. Offer **Moi seulement** or **Toute l’organisation** explicitly unless the user already chose. Sharing and computer placement are separate choices. Produce a complete definition with explicit compatibility entries. A target may be marked `compatible` only when its validation report has no blocking finding.
+Start by listing accessible agents when the request may refer to an existing one. For a new agent, gather its purpose, instructions, expected skills, memory mode, audience, distribution policy, and whether it must remain available H24. Derive the purpose, instructions and skills from the conversation instead of asking for them again. Ask the audience and H24 questions together, early, while the rest of the work continues: offer **Moi seulement** or **Toute l’organisation**, and H24 on a listed ready remote computer or local use only, unless the user already chose. Sharing and computer placement are separate choices. Produce a complete definition with explicit compatibility entries. A target may be marked `compatible` only when its validation report has no blocking finding.
 
 ## Native H24 setup in Codex
 

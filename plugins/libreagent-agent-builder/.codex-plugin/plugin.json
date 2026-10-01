@@ -1,6 +1,6 @@
 {
   "name": "libreagent-agent-builder",
-  "version": "0.2.4+codex.20260928170000",
+  "version": "0.2.6+codex.20261001160000",
   "description": "Create private or organization agents with native H24 computer setup and durable backup status.",
   "author": {
     "name": "LibreAgent"
@@ -15,6 +15,7 @@
     "github"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "LibreAgent Agent Builder",
     "shortDescription": "Create agents and choose H24 hosting in LibreAgent.",
@@ -28,7 +29,6 @@
     "websiteURL": "https://libreagent.92.222.229.134.sslip.io/",
     "defaultPrompt": [
       "Cr\u00e9e un agent pour faire des recettes v\u00e9ganes.",
-      "Ouvre cet agent dans LibreAgent Studio.",
       "Pr\u00e9pare une nouvelle version de cet agent.",
       "Cr\u00e9e un skill \u00e0 partir de cette conversation et propose de l'ajouter \u00e0 LibreAgent."
     ]
