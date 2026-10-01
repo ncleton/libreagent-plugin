@@ -1,0 +1,32 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "libreagent-agent-builder",
+  "version": "0.2.4",
+  "description": "Create private or organization agents with native H24 computer setup and durable backup status.",
+  "author": {
+    "name": "LibreAgent",
+    "url": "https://libreagent.92.222.229.134.sslip.io/"
+  },
+  "homepage": "https://libreagent.92.222.229.134.sslip.io/",
+  "license": "AGPL-3.0-or-later",
+  "keywords": ["agents", "organization", "skills", "versioning", "github"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "LibreAgent Agent Builder",
+        "shortDescription": "Create agents and choose H24 hosting in LibreAgent.",
+        "longDescription": "Create an agent from a chat request, choose personal or organization access and an owned remote computer for H24, connect ChatGPT by code in Codex, and review private backup status.",
+        "developerName": "LibreAgent",
+        "category": "Productivity",
+        "capabilities": ["Interactive", "Write"],
+        "websiteURL": "https://libreagent.92.222.229.134.sslip.io/",
+        "defaultPrompt": [
+          "Crée un agent pour faire des recettes véganes.",
+          "Ouvre cet agent dans LibreAgent Studio.",
+          "Prépare une nouvelle version de cet agent.",
+          "Crée un skill à partir de cette conversation et propose de l'ajouter à LibreAgent."
+        ]
+      }
+    }
+  }
+}

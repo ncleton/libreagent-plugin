@@ -1,0 +1,24 @@
+{
+  "author": {
+    "name": "LibreAgent",
+    "url": "https://libreagent.92.222.229.134.sslip.io/"
+  },
+  "description": "Create private or organization agents with native H24 computer setup and durable backup status.",
+  "homepage": "https://libreagent.92.222.229.134.sslip.io/",
+  "keywords": [
+    "agents",
+    "organization",
+    "skills",
+    "versioning",
+    "github"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "mcpServers": {
+    "libreagent": {
+      "type": "http",
+      "url": "https://libreagent.92.222.229.134.sslip.io/mcp"
+    }
+  },
+  "name": "libreagent-agent-builder",
+  "version": "0.2.4"
+}

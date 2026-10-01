@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${PLUGIN_ROOT}/hooks/skill_created.py",
+            "timeout": 10,
+            "statusMessage": "Checking for a new skill"
+          }
+        ]
+      }
+    ]
+  }
+}

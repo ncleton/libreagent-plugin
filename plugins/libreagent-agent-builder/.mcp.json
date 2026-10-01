@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "libreagent": {
+      "type": "http",
+      "url": "https://libreagent.92.222.229.134.sslip.io/mcp",
+      "bearer_token_env_var": "LIBREAGENT_API_TOKEN"
+    }
+  }
+}

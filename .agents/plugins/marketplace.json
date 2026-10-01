@@ -1,0 +1,20 @@
+{
+  "interface": {
+    "displayName": "LibreAgent"
+  },
+  "name": "libreagent",
+  "plugins": [
+    {
+      "category": "Productivity",
+      "name": "libreagent-agent-builder",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/libreagent-agent-builder",
+        "source": "local"
+      }
+    }
+  ]
+}
