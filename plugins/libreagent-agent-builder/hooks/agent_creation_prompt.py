@@ -18,8 +18,9 @@ INSTALL = (
     "space or add a computer. Apply the libreagent-agent-builder install-libreagent "
     "skill now: start with its interactive questions (goal, operating system, this "
     "computer or another) using the session's question tool, and do not answer with "
-    "a generic installation guide. Ignore this if the user is only developing "
-    "LibreAgent itself."
+    "a generic installation guide. After request_user_input_async, do not end the "
+    "turn: wait for the answer with the sleep or wait tool. Ignore this if the user "
+    "is only developing LibreAgent itself."
 )
 DETECTED = (
     "LibreAgent: this conversation is building an agent. Apply the "
