@@ -79,8 +79,31 @@ AGENT_FOR = re.compile(
     r"\b(?:skills?|mcp|plugins?|outils?|tools?)\b[^.?!\n]{0,60}\b(?:pour|for) "
     r"(?:l'|un |une |cet |the |an |this |my |mon |notre )?" + AGENT_NOUN + r"\b"
 )
+PROJECT_TO_AGENT = re.compile(
+    r"\b(?:faire de|fais de|faites de|transform\w*|convert\w*|packag\w*|turn\w*|"
+    r"rendre|rends|make)\b[^.?!\n]{0,80}\b(?:en |into |an? |un |une |as an? )"
+    r"(?:veritable |vrai |real |true )?" + AGENT_NOUN + r"\b"
+)
 
 
 def mentions_agent_creation(prompt):
     text = fold(prompt)
-    return bool(CREATION.search(text) or AGENT_DUTY.search(text) or AGENT_FOR.search(text))
+    return bool(CREATION.search(text) or AGENT_DUTY.search(text) or AGENT_FOR.search(text)
+                or PROJECT_TO_AGENT.search(text))
+
+
+LIBREAGENT = re.compile(r"\blibre[ -]?agent\b")
+COMPUTER_NOUN = r"(?:ordi\w*|mac|macbook|pc|windows|linux|raspberry\w*|serveur|server|vps|computer|machine|poste)"
+INSTALL_INTENT = re.compile(
+    r"\b(?:install\w*|reinstall\w*|mettre en place|set ?up|onboard\w*|rejoind\w*|join\w*|"
+    r"premier lancement|first launch|get started|commencer|demarrer)\b"
+    r"|\b(?:autre|nouvel|nouveau|second|deuxieme|another|other|new)\s+" + COMPUTER_NOUN + r"\b"
+    r"|\b(?:associ\w*|appair\w*|ajout\w*|add\w*|connect\w*|branch\w*)\b[^.?!\n]{0,40}\b(?:mon |ma |cet |cette |un |une |l'|le |la |my |this |a |an )?"
+    + COMPUTER_NOUN + r"\b"
+)
+
+
+def mentions_libreagent_install(prompt):
+    """A request to install LibreAgent, join a team's space or add a computer."""
+    text = fold(prompt)
+    return bool(LIBREAGENT.search(text) and INSTALL_INTENT.search(text))
