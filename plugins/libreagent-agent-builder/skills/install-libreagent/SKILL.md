@@ -7,11 +7,13 @@ description: Interactive, beginner-friendly onboarding to install LibreAgent. Us
 
 The person may know nothing about LibreAgent, terminals or servers. Never answer an installation request with a ready-made guide covering every case: find out what they want first, then walk them through only their path, one step at a time, checking each result. Speak French, in short sentences, with everyday words: « l'espace LibreAgent de votre équipe », « associer cet ordinateur », « le lien d'invitation ». Name a technical tool only when the person must click or type it.
 
+Every message is as short as possible: no introduction, no restating of what you checked, no obvious prerequisite (internet connection, keeping a computer on), no closing advice. Each link or command to open or paste goes alone in its own fenced code block, which the app shows with a copy button.
+
 ## How to ask
 
 - Ask with the interactive question tool of the session: in Codex request_user_input when it is listed, otherwise request_user_input_async; in Claude Code AskUserQuestion. Only when none is available, ask one plain-text question with two or three short numbered choices.
-- request_user_input_async returns at once, and its answer arrives as a new message while your turn is still running. Ending the turn right after it makes the person lose the questions. So after calling it, write nothing else and never send a final answer: wait with the session's sleep or wait tool (for example clock sleep for 60000 ms, repeated; it returns as soon as the answer arrives), then continue from the answer. Only when no such tool exists, end the turn with one short sentence saying you are waiting for the answer to the questions above, without repeating them and without any other information.
-- Each question has two or three short options, recommended first, each with a one-sentence explanation. The tools add a free answer themselves; do not add « Autre ». Bundle at most three questions that do not depend on each other; ask a dependent question in a later call.
+- The person's answer is required. Never choose an option yourself, never continue on an assumption, and never treat silence as an answer, however long it lasts; this overrides any general habit of proceeding after a delay. Do every silent check before asking. request_user_input_async returns at once and each answer arrives later as a new message: after the call, do nothing else at all (no command, no check, no message), only wait with the session's sleep tool (for example clock sleep for 60000 ms, repeated; it returns as soon as an answer arrives). After 30 minutes without an answer, or when no sleep tool exists, end the turn with the single sentence « Je reprends dès que vous avez répondu à la question ci-dessus. » The answer then starts the next turn.
+- Ask one question per call, so that each answer is complete and nothing is asked twice; ask the next question only after the answer to the previous one. Each question has two or three short options, recommended first, each with a one-sentence explanation. The tools add a free answer themselves; do not add « Autre ».
 - Do not ask what you can find out. Before the first question, check silently on this computer: the system (uname -sm, or $env:OS on Windows), whether ~/.local/share/libreagent/connection.json exists and which server it names (read only server and cwd, never the token), and whether codex is on the PATH. Use this only to pre-select the recommended option, never to skip the goal question. Do not report these findings before the person has answered (for example « ce Mac est déjà associé »); mention one later only when it changes a step they must do.
 - Never ask for a password, a pairing code, an API key or any secret in the conversation. The person types them in the LibreAgent page, the app or their own terminal.
 - After each step the person does on their own, ask « Où en êtes-vous ? » with options such as « C'est fait », « J'ai un message d'erreur », « Je suis bloqué ». On an error, ask them to paste the message, read its « Que faire » line, and fix that before continuing.
@@ -50,43 +52,68 @@ Ask « LibreAgent sera pour qui ? »:
 
 ## 3. Associate the computer
 
-Ask together:
+Ask one after the other, each in its own call:
 
 - « Sur quel ordinateur ? »: Mac / PC Windows / Linux ou Raspberry Pi (also a rented server without a screen). Pre-select the detected system.
 - « Est-ce l'ordinateur sur lequel nous discutons ? »: Oui, celui-ci / Non, un autre.
 
-Before the steps, state what is needed in one short list: macOS 13 or later (Apple Silicon or Intel); Windows 10 or 11 (x64, or ARM with Windows 11); Linux 64 bits x86-64 or ARM64 (Raspberry Pi 4 or 5 with Raspberry Pi OS 64 bits); an internet connection; a ChatGPT account, because the agents work through Codex, which LibreAgent installs by itself if it is missing; and the computer must stay on for the agents to work. No administrator rights are needed.
+### How to write the steps
 
-The installation page of the server is <adresse>/install/connect/. Give the steps for the chosen system only, one or two at a time, and wait for « C'est fait ».
+Go straight to the point. The person is not a beginner at everything: never state the obvious (an internet connection, a recent system, keeping the computer on, no administrator rights, the server answering) and never restate what you checked. No requirement list, no introduction, no closing advice. Mention a prerequisite only when it is actually missing (for example an unsupported system).
 
-**Mac**
-1. Open <adresse>/install/connect/ and click « Télécharger pour Mac ».
-2. Open the downloaded file and drag LibreAgent into Applications, then open LibreAgent from Applications. If macOS says it cannot check the app: click « Terminé », open Réglages Système, Confidentialité et sécurité, and click « Ouvrir quand même » at the bottom.
-3. The app comes set for the main LibreAgent server. When the installation page says to replace the server in Réglages (it shows this on every other server, with the address to enter), open Réglages in the app first and enter <adresse>.
-4. Click « Associer cet ordinateur ». A LibreAgent page opens: sign in and click « Associer cet ordinateur ». Come back to the app and click « Autoriser ».
+- Two or three numbered steps of one short line each.
+- Every link or command the person must open or paste goes alone in its own fenced code block, which the app shows with a copy button. Do not put it as a Markdown link in a sentence.
+- Keep fallbacks (macOS or Windows warning, expired code, offline computer, Codex sign-in) for when the person reports a problem; then give only the matching fix, as briefly.
+- End with one line only: what they will see when it works.
 
-**Windows**
-1. Open <adresse>/install/connect/, click « Télécharger pour Windows » and open the file. If Windows shows « Windows a protégé votre ordinateur »: « Informations complémentaires », then « Exécuter quand même ».
-2. LibreAgent opens at the end. Same steps 3 and 4 as on a Mac.
-Without the app, PowerShell works too: irm <adresse>/install.ps1 | iex.
+Read <adresse>/install/connect/ once: its script names the server the desktop app is set for (the address compared with location.origin). Add the « Réglages » step only when that server differs from <adresse>.
 
-**Linux, Raspberry Pi, rented server**
-1. On a server shared with other uses, first create a separate user for the agents: sudo adduser agents, sudo loginctl enable-linger agents, then sudo -iu agents. On a personal computer, run sudo loginctl enable-linger $USER once so LibreAgent keeps running after logout; skip both when sudo is not available and say the service then stops at logout.
-2. Paste curl -fsSL <adresse>/install.sh | sh in a terminal (over SSH for a rented server). The command already contains the right server.
-3. It shows an association code and opens or names the page Ordinateurs: sign in there, enter the code and approve. Back in the terminal, check the account and organization shown, then confirm. The code is valid 10 minutes; if it expires, run the command again.
+### Mac or Windows
 
-**Codex sign-in.** If Codex is not signed in on that computer, LibreAgent shows a ChatGPT link and a code: the person opens the link, signs in to ChatGPT and enters the code. They never send it to you.
+Model answer (Windows: « Télécharger pour Windows », otherwise identical):
 
-**When it is this computer.** You may download and run the command yourself only where it needs no sudo password. Run install.sh in a terminal session (TTY), tell the person to approve the code in the page Ordinateurs, then show them the account and organization the terminal prints and ask, with the question tool, whether to confirm; send the confirmation only after their explicit yes. For the Mac and Windows app, the clicks stay theirs.
+~~~~~
+Sur l'autre Mac :
 
-**When it is another computer.** Give the steps as a short message they can follow on that computer, and offer to continue there: once LibreAgent is installed, the LibreAgent plugins arrive in Codex and Claude Code on that computer, including this skill.
+1. Télécharge LibreAgent depuis cette page (« Télécharger pour Mac ») :
+   ```
+   <adresse>/install/connect/
+   ```
+2. Ouvre LibreAgent, clique sur « Associer cet ordinateur », connecte-toi sur la page qui s'ouvre, puis clique sur « Autoriser » dans l'app.
 
-## 4. Check
+L'ordinateur apparaît ensuite dans Ordinateurs.
+~~~~~
 
-- The computer appears « en ligne » in <adresse>/computers; when the LibreAgent MCP tools are available here, also call remote_computers_list.
-- On the new computer, a new Codex or Claude Code conversation (one opened before the plugins arrived keeps its previous tools) can call organizations_list: the plugins reach LibreAgent through the paired computer without any sign-in.
-- If the computer stays offline: Mac or Windows, open the LibreAgent app and click « Redémarrer le service »; Linux, run libreagent-connect run in a terminal to see the message.
+When the Réglages step applies, insert before step 2: « Dans l'app, ouvre Réglages et remplace le serveur par : » followed by <adresse> in its own code block.
 
-## 5. Wrap-up
+Fixes, only when reported: macOS « impossible de vérifier » → Réglages Système, Confidentialité et sécurité, « Ouvrir quand même »; Windows « Windows a protégé votre ordinateur » → « Informations complémentaires », « Exécuter quand même »; computer offline → in the app, « Redémarrer le service ».
 
-Say in a few lines what is ready and checked: the account and its space, the computer associated and online, Codex signed in. Remind them that the computer must stay on for their agents to work, that their ChatGPT and Claude credentials stay on that computer, and that they can revoke it at any time in Ordinateurs. Then ask what to do next: add an agent from the link they received (the agent_link_preview and agent_link_install tools, or LibreAgent, Agents, Ajouter un agent), create their own agent (create-organization-agent skill), or associate another computer.
+### Linux, Raspberry Pi, rented server
+
+Model answer:
+
+~~~~~
+Dans un terminal sur cet ordinateur (en SSH pour un serveur loué) :
+
+1. Lance :
+   ```
+   curl -fsSL <adresse>/install.sh | sh
+   ```
+2. Saisis le code affiché dans la page Ordinateurs, puis confirme dans le terminal.
+
+L'ordinateur apparaît ensuite dans Ordinateurs.
+~~~~~
+
+On a server shared with other uses, add a first step with its own code block: sudo adduser agents && sudo loginctl enable-linger agents && sudo -iu agents. On a personal Linux computer, add sudo loginctl enable-linger $USER so LibreAgent keeps running after logout. Fixes, only when reported: expired code (valid 10 minutes) → run the command again; computer offline → libreagent-connect run shows the message.
+
+### Codex sign-in
+
+If Codex is not signed in on that computer, LibreAgent shows a ChatGPT link and a code by itself; mention it only if the person asks or is stuck there. They never send the code to you.
+
+### When it is this computer
+
+You may run the command yourself only where it needs no sudo password: run install.sh in a terminal session (TTY), tell the person to approve the code in the page Ordinateurs, show the account and organization the terminal prints and ask with the question tool whether to confirm; confirm only after their explicit yes. For the Mac and Windows app, the clicks stay theirs.
+
+## 4. Check and finish
+
+Once the person says it is done, check that the computer is « en ligne » (remote_computers_list when the LibreAgent tools are available, otherwise ask them to look at Ordinateurs). Then answer in one or two lines: it works, and what they can do next (add an agent from a link, create an agent, associate another computer), as a question with the question tool.
